@@ -49,19 +49,18 @@
 		</div>
 		<script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-    //jquery实现
+                      //jquery实现
 			$("label").each(function(index, ele) {
-										$(ele).click(function() {
-											var pi = $(ele).prev("input").attr("id");
-											
-											if(!$("#"+pi).is(':checked')) {
-												$(".box").not($("#"+pi)).each(function(i, e) {
-													$(e).prop("checked", false);
-												});
-											}
-										})
-									});
-          //原生JS实现
+				$(ele).click(function() {
+				var pi = $(ele).prev("input").attr("id");
+				if(!$("#"+pi).is(':checked')) {
+					$(".box").not($("#"+pi)).each(function(i, e) {
+					   $(e).prop("checked", false);
+					});
+				}
+			   })
+			});
+                      //原生JS实现
 			var labelArr = document.querySelectorAll("label");
 			var box = document.querySelectorAll(".box");
 			for(var i = 0; i < labelArr.length; i++) {
