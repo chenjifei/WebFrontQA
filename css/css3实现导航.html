@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>css3导航</title>
+		<style type="text/css">
+			.sidebar>li {
+				list-style: none;
+				padding-top: 5px;
+				padding-bottom: 5px;
+			}
+			.sidebar>li input{
+				position: absolute;
+				width: 100%;
+				height: 48px;
+				z-index:10;
+				opacity: 0;
+			}
+			.sidebar>li ul{
+				margin: 0;
+				list-style-type:none;
+				padding-left: 20px;
+				display: none;
+			}
+			.sidebar>li ul li{
+				padding: 10px;
+			}
+			.sidebar>li input:checked ~ul{
+				display: block;
+				-webkit-animation-name:opcityChange;
+				-webkit-animation-duration:1s;
+			}
+			@-webkit-keyframes opcityChange{
+				0%{
+					opacity: 0.3;
+				}
+				10%{
+					opacity: 0.8;
+				}
+				100%{
+					opacity: 1;
+				}
+			}
+			.sidebar>li ul li:hover{
+				background-color: #EEE;
+			}
+		</style>
+	</head>
+	<body>
+		<ul class="sidebar">
+			<li>
+				<input type="checkbox" />
+				<a>目录一</a>
+				<ul>
+					<li><a>子目录</a></li>
+					<li><a>子目录</a></li>
+				</ul>
+			</li>
+			<li>
+				<input type="checkbox" />
+				<a>目录二</a>
+				<ul>
+					<li><a>子目录</a></li>
+					<li><a>子目录</a></li>
+				</ul>
+			</li>
+		</ul>
+	</body>
+</html>
