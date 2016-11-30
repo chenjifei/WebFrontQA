@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<script src="../js/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//jQuery JSONP
+			$.getJSON('http://127.0.0.1/jsonp/server.php?callback=?', function(jsondata) {
+				//处理获得的json数据
+				console.log(jsondata);
+			});
+			$.ajax({
+				url: "http://127.0.0.1/jsonp/server.php",
+				dataType: 'jsonp',
+				data: '',
+				jsonp: 'callback',
+				success: function(result) {
+					console.log(result);
+				},
+				timeout: 3000
+			});
+			$.get('http://127.0.0.1/jsonp/server.php?callback=?', function(json) {
+				console.log(json);
+			}, 'jsonp');
+			//javascript  JSONP
+			var jsonp = document.createElement('script');
+			jsonp.type = "text/javascript";
+			jsonp.src = 'http://127.0.0.1/jsonp/server.php?callback=jsonpcallback';
+			document.head.appendChild(jsonp);
+
+			function jsonpcallback(jsonpdata) {
+				console.log(jsonpdata);
+			}
+		</script>
+	</body>
+
+</html>
