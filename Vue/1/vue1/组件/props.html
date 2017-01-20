@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="app">
+			<prop v-bind:child-msg="parentMag"></prop>
+		</div>
+		<script src="../js/vue.1.0.4.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var prop = Vue.component('prop',{
+				props:["childMsg"],
+				template:"<div><p>{{childMsg}}</p><p>{{all}}</p></div>",
+				data:function(){
+					return {
+						all:3
+					}
+				}
+			});
+			var vue = new Vue({
+				el:"#app",
+				data:{
+					parentMag:"父组件"
+				}
+			})
+		</script>
+	</body>
+</html>

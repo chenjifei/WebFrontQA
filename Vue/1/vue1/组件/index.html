@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Vue组件</title>
+		<style type="text/css">
+			table {
+				border-collapse: collapse;
+				margin: 30px auto;
+			}
+			
+			th,
+			td {
+				border: 1px solid #EEE;
+				text-align: center;
+				vertical-align: middle;
+				padding: 5px 10px;
+			}
+			
+			button {
+				border: none;
+				color: white;
+				background-color: #0087D1;
+				border-radius: 4px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			
+			.v-link-active {
+				color: #0087D1;
+			}
+			.common{
+				text-decoration: none;
+				font-size: 20px;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<components></components>
+			<parent></parent>
+			<componentb></componentb>
+			<parentprop></parentprop>
+			<camelcase my-message='Hello Vue!'></camelcase>
+			<dynamic></dynamic>
+
+		</div>
+		<hr />
+		<p>父子组件通信</p>
+		<!-- 子组件模板 -->
+		<template id="child-temp">
+			<input v-model="msg">
+			<button v-on:click="notify">Dispatch Event</button>
+		</template>
+		<!-- 父组件模板 -->
+		<div id="events-example">
+			<p>Messages: {{ messages | json }}</p>
+			<childtemp></childtemp>
+		</div>
+		<hr />
+		<p>父子组件通信</p>
+		<!-- 子组件模板 -->
+		<template id="ctemp">
+			<input v-model="cmsg">
+			<button v-on:click="cnotify">Dispatch Event</button>
+		</template>
+		<!-- 父组件模板 -->
+		<div id="example">
+			<p>Message: {{ message | json }}</p>
+			<cemp v-on:child-msg="handler" v-ref:profile></cemp>
+		</div>
+		<hr />
+		<p>Slot</p>
+		<div id="slot">
+			<slotparent></slotparent>
+		</div>
+		<hr />
+		<p>动态组件</p>
+		<div id="dycomponent">
+			<button @click="home">home</button>
+			<button @click="posts">posts</button>
+			<button @click="archive">archive</button>
+			<!--如果把切换出去的组件保留在内存中，可以保留它的状态或避免重新渲染。为此可以添加一个 keep-alive 指令参数：-->
+			<component :is="currentView" keep-alive>
+				<!-- 组件在 vm.currentview 变化时改变 -->
+			</component>
+		</div>
+		<hr />
+		<p>异步组件</p>
+		<div id="sync">
+			<synctemplate></synctemplate>
+			<syncdata></syncdata>
+		</div>
+
+		<div id="router">
+			<a v-link="{path:'/home'}" class="common">Home</a>
+			<a v-link="{path:'/about'}"class="common">About</a>
+			<router-view></router-view>
+		</div>
+
+		<script src="../js/vue.1.0.4.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/vue-resource.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/vue-router.0.7.13.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//组件构造以及注册要在实例化Vue之前完成
+
+			//组件构造器
+			var components = Vue.extend({
+				template: '<div><p>{{message}}</p><input value="{{message}}" v-model="message"/></div>',
+				data: function() {
+					return {
+						message: "MESSAGE!"
+					}
+				},
+				el: function() {
+					console.log(arguments)
+				}
+			});
+			//全局注册组件
+			Vue.component("components", components);
+
+			//组件构造器
+			var child = Vue.extend({
+				template: '<div>组件构造器</div>',
+			});
+			var parent = Vue.extend({
+				template: '<div><child></child><p>局部注册组件</p></div>',
+				components: {
+					'child': child
+				}
+			});
+			//全局注册组件
+			Vue.component("parent", parent);
+
+			//组件注册语法糖
+			Vue.component('componenta', {
+				template: "<div>CCCCCCCCCCCCC</div>"
+			});
+			Vue.component('componentb', {
+				template: "<div>componentB<componenta></componenta></div>",
+				components: {
+					'componenta': {
+						template: "<div>CCCCCCCCCCCCC</div>"
+					}
+				}
+			});
+
+			//Props传递数据
+			//组件实例的作用域是孤立的。这意味着不能并且不应该在子组件的模板内直接引用父组件的数据
+			Vue.component("parentprop", {
+				template: '<childprop msg="Child Props"></childprop>'
+			});
+
+			Vue.component('childprop', {
+				props: ['msg'],
+				template: '<p>{{msg}}</p>'
+			});
+
+			Vue.component('camelcase', {
+				props: ['myMessage'],
+				template: '<div>{{myMessage}}</div>'
+			});
+
+			Vue.component("dynamic", {
+				template: '<div><input v-model="parentMsg"><br><dynamicprops v-bind:my-msg="parentMsg"></dynamicprops></div>',
+				data: function() {
+					return {
+						parentMsg: "parentMsg"
+					}
+				}
+			})
+
+			Vue.component('dynamicprops', {
+				props: ['myMsg'],
+				template: '<div>{{myMsg}}</div>'
+			});
+
+			//Vue实例
+			var vue = new Vue({
+				el: "#app"
+			});
+
+			//父子组件通信
+			Vue.component('childtemp', {
+				template: '#child-temp',
+				data: function() {
+					return {
+						msg: "1234567890"
+					}
+				},
+				methods: {
+					notify: function() {
+						if(this.msg.trim()) {
+							this.$dispatch('child-msg', this.msg);
+							this.msg = '';
+						}
+					}
+				}
+			});
+
+			var parent = new Vue({
+				el: "#events-example",
+				data: {
+					messages: []
+				},
+				events: {
+					'child-msg': function(msg) {
+						this.messages.push(msg);
+					}
+				}
+			});
+
+			//父子组件通信
+			Vue.component('cemp', {
+				template: '#ctemp',
+				data: function() {
+					return {
+						cmsg: "1234567890"
+					}
+				},
+				methods: {
+					cnotify: function() {
+						if(this.cmsg.trim()) {
+							this.$dispatch('child-msg', this.cmsg);
+							this.cmsg = '';
+						}
+					}
+				}
+			});
+
+			var p = new Vue({
+				el: "#example",
+				data: {
+					message: []
+				},
+				methods: {
+					handler: function(msg) {
+						this.message.push(msg);
+					}
+				}
+			});
+
+			Vue.component("slotparent", {
+				template: '<childslot><p>123</p><p>456</p></childslot>'
+			});
+			Vue.component("childslot", {
+				template: "<p style='color:red;'>789</p> <slot>如果没有分发内容则显示我。</slot>"
+			});
+			var slot = new Vue({
+				el: "#slot"
+			});
+
+			//动态组件
+			Vue.component("home", {});
+			Vue.component("posts", {});
+			Vue.component("archive", {});
+			var dyv = new Vue({
+				el: '#dycomponent',
+				data: {
+					currentView: 'home'
+				},
+				components: {
+					"home": {
+						template: '<div>Home</div>'
+					},
+					"posts": {
+						template: '<div>Posts</div>'
+					},
+					"archive": {
+						template: '<div>Archive</div>'
+					}
+				},
+				methods: {
+					home: function() {
+						this.currentView = 'home';
+					},
+					posts: function() {
+						this.currentView = 'posts';
+					},
+					archive: function() {
+						this.currentView = "archive";
+					}
+				}
+			});
+
+			//异步组件
+			Vue.component('synctemplate', function(resolve, reject) {
+				console.log(arguments);
+				setTimeout(function() {
+					resolve({
+						template: "<div>异步组件!!!!!!!!</div>"
+					});
+				}, 1000);
+			});
+
+			Vue.component("syncdata", function(resolve, reject) {
+				this.$http.get('http://127.0.0.1/page/post.php?type=getData&cp=1').then(function(data) {
+					var d = JSON.parse(data.data);
+					resolve({
+						template: `<table>
+					<thead>
+						<tr>
+							<th v-for="gc in gridColumns">{{gc}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="data in gridData">
+							<td>{{data.id}}</td>
+							<td>{{data.name}}</td>
+							<td>{{data.age}}</td>
+							<td><button v-on:click="delete" data-id="{{data.id}}">删除</button></td>
+						</tr>
+					</tbody>
+				</table>`,
+						data: function() {
+							return {
+								gridColumns: ['编号', '姓名', '年龄', '操作'],
+								gridData: d.dataList
+							}
+						},
+						methods: {
+							delete: function(e) {
+								var id = e.target.getAttribute("data-id");
+								this.$http.get('http://127.0.0.1/page/post.php?type=delete&id=' + id).then(function(data) {
+									this.getData();
+									console.log(data.data);
+								}).catch(function(error) {
+									console.log(error)
+								});
+							},
+							getData: function() {
+								this.$http.get('http://127.0.0.1/page/post.php?type=getData&cp=1').then(function(data) {
+									var d = JSON.parse(data.data);
+									console.log(this);
+									this.$set("gridData", d.dataList);
+								});
+							}
+						}
+					});
+				}).catch(function(e) {
+					console.log(e);
+				});
+			});
+
+			var sync = new Vue({
+				el: '#sync'
+			});
+			
+			
+			var Home = Vue.extend({
+				template:"<div>Home Page</div>"
+			});
+			var About = Vue.extend({
+				template:"<div>About Page</div>"
+			});
+			var router = new VueRouter();
+			router.map({
+				'/about': {
+					component: About
+				},
+				'/home': {
+					component: Home
+				}
+			});
+			var App = Vue.extend({});
+			router.start(App,"#router");
+		</script>
+	</body>
+
+</html>

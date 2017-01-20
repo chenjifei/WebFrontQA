@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<div id="app"> 
+			{{message | capitalize }}
+		</div>
+		<hr />
+		<div id="app1">
+			<p>{{msg}}</p>
+			<input v-model="msg" />
+		</div>
+		<hr />
+		<div id="app2">
+			<ul>
+				<li v-for="todo in todos">
+					{{todo.text}}
+				</li>
+			</ul>
+		</div>
+		<hr />
+		<div id="app3">
+			<p>{{mess}}</p>
+			<button v-on:click="reverseMess">Reverse Mess</button>
+		</div>
+		<hr />
+		<div id="app4">
+			<input v-model="newTodo"/>
+			<button @click=addTodo>Add</button>
+			<ul>
+				<li v-for="todo in todos">
+					<span >
+						{{todo.text}}
+					</span>
+					<button @click="removeTodo($index)">X</button>
+				</li>
+			</ul>
+		</div>
+		<hr />
+		<hr />
+		<hr />
+		
+		
+		<script src="js/vue.1.0.4.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			new Vue({
+				el:'#app',
+				data:{
+					message:"Hello Vue!"
+				}
+			});
+			new Vue({
+				el:"#app1",
+				data:{
+					msg:"Vue"
+				}
+			});
+			new Vue({
+				el:"#app2",
+				data:{
+					todos:[
+					{
+						text:'Learn Script'
+					},
+					{
+						text:'Learn Vue'
+					},
+					{
+						text:"Build Something"
+					}]
+				}
+			});
+			new Vue({
+				el:"#app3",
+				data:{
+					mess:"Hello"
+				},
+				methods:{
+					reverseMess:function(){
+						this.mess=this.mess.split("").reverse().join("");
+					}
+				}
+				
+			});
+			new Vue({
+				el:"#app4",
+				data:{
+					newTodo:'',
+					todos:[
+					{
+						text:'Add some todos'
+					}]
+				},
+				methods:{
+					addTodo:function(){
+						var text=this.newTodo.trim();
+						if(text){
+							this.todos.push({text:text});
+							this.newTodo='';
+						}
+					},
+					removeTodo:function(index){
+						this.todos.splice(index,1);
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

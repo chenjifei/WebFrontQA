@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="pags.css" />
+		<style type="text/css">
+			#app{
+				position: relative;
+			}
+			table {
+				border-collapse: collapse;
+				margin: 30px auto;
+			}
+			
+			th,
+			td {
+				border: 1px solid #EEE;
+				text-align: center;
+				vertical-align: middle;
+				padding: 5px 10px;
+			}
+			
+			button {
+				border: none;
+				color: white;
+				background-color: #0087D1;
+				border-radius: 4px;
+				padding: 5px 10px;
+				cursor: pointer;
+			}
+			
+			.page-bar {
+				position: absolute;
+				left:50%;
+				transform: translateX(-50%);
+			}
+			li{
+				display: inline;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<table>
+				<thead>
+					<tr>
+						<th v-for="gc in gridColumns">{{gc}}</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr v-for="data in gridData">
+						<td>{{data.id}}</td>
+						<td>{{data.name}}</td>
+						<td>{{data.age}}</td>
+						<td><button v-on:click="delete" data-id="{{data.id}}">删除</button></td>
+					</tr>
+				</tbody>
+			</table>
+			<page v-on:child-msg="handler" v-ref:child></page>
+		</div>
+		<script src="../js/vue.1.0.4.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/vue-resource.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var page = Vue.component('page', {
+				template: `
+								<div class="page-bar">
+									<ul>
+										<li v-if="showFirst">
+											<a v-on:click="prev">上一页</a>
+										</li>
+										<li v-for="index in indexs" v-bind:class="{ 'active': cur == index}">
+											<a v-on:click="btnClick(index)">{{ index }}</a>
+										</li>
+										<li v-if="showLast">
+											<a v-on:click="next">下一页</a>
+										</li>
+										<li>
+											<a>共<i>{{all}}</i>页</a>
+										</li>
+									</ul>
+								</div>`,
+				data: function() {
+					return {
+						all: 0,
+						cur: 1
+					}
+				},
+				methods: {
+					btnClick: function(data) { //页码点击事件
+						if(data != this.cur) {
+							this.cur = data
+							this.$dispatch('child-msg', this.cur)
+						}
+					},
+					prev: function() {
+						if(this.cur != 1) {
+							this.cur--;
+							this.$dispatch('child-msg', this.cur)
+						}
+					},
+					next: function() {
+						if(this.cur + 1 <= this.all) {
+							this.cur++;
+							this.$dispatch('child-msg', this.cur)
+						}
+					}
+				},
+				computed: {
+					indexs: function() {
+						var left = 1
+						var right = this.all
+						var ar = []
+						if(this.all >= 11) {
+							if(this.cur > 5 && this.cur < this.all - 4) {
+								left = this.cur - 5
+								right = this.cur + 4
+							} else {
+								if(this.cur <= 5) {
+									left = 1
+									right = 10
+								} else {
+									right = this.all
+									left = this.all - 9
+								}
+							}
+						}
+						while(left <= right) {
+							ar.push(left)
+							left++
+						}
+						return ar
+					},
+					showLast: function() {
+						if(this.cur == this.all) {
+							return false
+						}
+						return true
+					},
+					showFirst: function() {
+						if(this.cur == 1) {
+							return false
+						}
+						return true
+					}
+				}
+			});
+			var vue = new Vue({
+				el: "#app",
+				data: {
+					gridColumns: ['编号', '姓名', '年龄', '操作'],
+					gridData: [],
+					delurl: 'http://127.0.0.1/page/post.php?type=delete&id=',
+					pageurl: 'http://127.0.0.1/page/post.php?type=getData&cp=',
+				},
+				ready: function() {
+					this.getData();
+				},
+				methods: {
+					handler: function(page) {
+						this.$http.get(this.pageurl + page).then(function(data) {
+							var d = JSON.parse(data.data);
+							this.$refs.child.all =Math.ceil(d.total / 10);
+							this.$set("gridData", d.dataList);
+						});
+					},
+					getData: function() {
+						this.$http.get(this.pageurl + 1).then(function(data) {
+							var d = JSON.parse(data.data);
+							this.$refs.child.all =Math.ceil(d.total / 10);
+							this.$set("gridData", d.dataList);
+						});
+					},
+					delete: function(e) {
+						var id = e.target.getAttribute("data-id");
+						this.$http.get(this.delurl + id).then(function(data) {
+							this.getData();
+						});
+					},
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>指令</title>
+	</head>
+	<body>
+		<div id="app">
+			<div v-mydirective:hello="msg">
+				
+			</div>
+			<div v-demo="{'color':'red'}"></div>
+			<div v-test.literal="color red"></div>
+			<div v-example a="hi"></div>
+		</div>
+		<script src="../js/vue.1.0.4.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			Vue.directive('mydirective',{
+				bind:function(){
+					console.log('bind',this,arguments);
+				},
+				update:function(val){
+					console.log('update',this,arguments);
+					this.el.innerHTML = this.name+"<br/>"+this.expression+"<br/>"+this.arg+ '<br>'+JSON.stringify(this.modifiers) + '<br>'+this.descriptor;
+					console.log(JSON.stringify(this.modifiers));
+					console.log(this.descriptor);
+				},
+				unbind:function(){
+					console.log('unbind',this,arguments);
+				}
+			});
+			//对象字面量
+			//如果指令需要多个值，可以传入一个 JavaScript 对象字面量。记住，指令可以使用任意合法的 JavaScript 表达式
+			Vue.directive('demo',function(value){
+				console.log(value);
+			});
+			//字面修饰符
+			//当指令使用了字面修饰符，它的值将按普通字符串处理并传递给 update 方法。update 方法将只调用一次，因为普通字符串不能响应数据变化。
+			Vue.directive('test',function(v){
+				console.log(v);
+			});
+			
+			//
+			Vue.directive('example',{
+				params:['a'],
+				bind:function(){
+					console.log(this);
+					console.log(this.params.a);
+				}
+			});
+			var v = new Vue({
+				el:"#app",
+				data:{
+					msg:"VueJS"
+				}
+			})
+		</script>
+	</body>
+</html>
