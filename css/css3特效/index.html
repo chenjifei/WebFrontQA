@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>15种漂亮的纯CSS3滑动按钮特效|DEMO_jQuery之家-自由分享jQuery、html5、css3的插件库</title>
+	<link href="http://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+section {
+  float: left;
+  min-width: 150px;
+  width: 33.33%;
+  padding: 25px 0;
+  min-height: 100px;
+}
+.checkbox {
+  position: relative;
+  display: inline-block;
+}
+.checkbox:after, .checkbox:before {
+  font-family: FontAwesome;
+  -webkit-font-feature-settings: normal;
+     -moz-font-feature-settings: normal;
+          font-feature-settings: normal;
+  -webkit-font-kerning: auto;
+     -moz-font-kerning: auto;
+          font-kerning: auto;
+  -webkit-font-language-override: normal;
+     -moz-font-language-override: normal;
+          font-language-override: normal;
+  font-stretch: normal;
+  font-style: normal;
+  font-synthesis: weight style;
+  font-variant: normal;
+  font-weight: normal;
+  text-rendering: auto;
+}
+.checkbox label {
+  width: 60px;
+  height: 20px;
+  background: #ccc;
+  position: relative;
+  display: inline-block;
+  border-radius: 46px;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.checkbox label:after {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  left: 0;
+  top: -5px;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+.checkbox input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  opacity: 0;
+  cursor: pointer;
+}
+.checkbox input:hover + label:after {
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.2), 0 3px 8px 0 rgba(0, 0, 0, 0.15);
+}
+.checkbox input:checked + label:after {
+  left: 40px;
+}
+.model-2 .checkbox label {
+  width: 45px;
+}
+.model-2 .checkbox label:after {
+  top: 0;
+  width: 20px;
+  height: 20px;
+}
+.model-2 .checkbox input:checked + label {
+  background: #4BD865;
+}
+.model-2 .checkbox input:checked + label:after {
+  left: 25px;
+}
+
+
+
+*{margin:0;padding:0;} 
+a{text-decoration:none;} 
+.btn_addPic{ 
+display: block; 
+position: relative; 
+width: 80px; 
+height: 80px; 
+overflow: hidden; 
+border: 1px solid #EBEBEB; 
+background: none repeat scroll 0 0 #F3F3F3; 
+color: #999999; 
+cursor: pointer; 
+text-align: center; 
+left:20px;
+} 
+.btn_addPic span{display: block;line-height: 39px;} 
+ 
+.btn_addPic:hover em{background-position:-19px 0;} 
+.filePrew { 
+display: block; 
+position: absolute; 
+top: 0; 
+left: 0; 
+width: 140px; 
+height: 39px; 
+font-size: 100px; /* 增大不同浏览器的可点击区域 */ 
+opacity: 0; /* 实现的关键点 */ 
+filter:alpha(opacity=0);/* 兼容IE */ 
+} 
+	</style>
+</head>
+<body>
+
+
+			<div class="model-2">
+			  <div class="checkbox">
+			    <input type="checkbox"/>
+			    <label></label>
+			  </div>
+			  </div>
+			  
+			  <br/>
+			  <br/>
+			  <br/>
+			  <br/>
+			<form><a class=btn_addPic href="javascript:void(0);"><span class="glyphicon glyphicon-camera"></span>
+			<input class=filePrew title=支持jpg、jpeg、gif、png格式，文件小于5M tabIndex=3 type=file size=3 name=pic></a></form>
+
+</body>
+</html>
