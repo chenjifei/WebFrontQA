@@ -91,12 +91,10 @@ require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {
     </body>  
 </html>  
 ```
-
-点击div1，可以发现test()函数不会报错。也就是说，requireJS加载不符合AMD规范的js文件，跟我们直接在html通过<script>标签加载，没有太大的差别。
+点击div1，可以发现test()函数不会报错。也就是说，requireJS加载不符合AMD规范的js文件，跟我们直接在html通过script标签加载，没有太大的差别。
 js文件中引入的全局变量，依然会存在，依然能够正常使用。
 
-下面我们看下shim参数的使用方式，我们将main.js修改如下:
-
+## 下面我们看下shim参数的使用方式，我们将main.js修改如下:
 
 ```javascript
 requirejs.config({  
@@ -118,8 +116,10 @@ require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {
 });  
 ```
 这段代码可以正常运行，可以看到：shim参数能够帮助我们以AMD模块的方式，使用那些不符合AMD规范的模块。
-下面接介绍下：deps和exports的含义。exports很好理解，就是模块的返回值。main.js中exports的值，
-一定要与dateUtil.js和stringUtil.js中暴露出的全局变量名称一致。很显然dateUtil.js和stringUtil.js这2个模块的返回值，
+下面接介绍下：deps和exports的含义。
+exports很好理解，就是模块的返回值。main.js中exports的值，
+一定要与dateUtil.js和stringUtil.js中暴露出的全局变量名称一致。
+很显然dateUtil.js和stringUtil.js这2个模块的返回值，
 就是暴露出的全局变量window.DateUtils和window.StringUtils，requireJS框架就是将这些全局变量的值返回，作为模块的返回结果。
 如果dateUtil.js或stringUtil.js中暴露了多个全局变量，那么exports可以指定其中任何的一个，作为模块的返回结果。
 不过一般的框架，都只会使用1个全局变量，这样冲突的可能性会减少，毕竟全局变量越少越好。
