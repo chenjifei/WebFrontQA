@@ -1,12 +1,18 @@
 我们知道在JavaScript中定义全局变量有2种方式，本质上是等价的，都是向window对象注入属性或者方法。
+
+```javascript
 // global.js  
 var g_name = "aty";  
-window.g_age = 25;  
+window.g_age = 25; 
+```
+
 当global.js加载的时候，浏览器的全局对象window就会多出2个属性:g_name和g_age。
 
 我们编写一个js工具类或者是js框架，通常有2种方式：
 
-方式1：dateUtil.js
+
+### 方式1：dateUtil.js
+```javascript
 (function(window) {  
     var DateUtils = {};  
     DateUtils.toString = function(){  
@@ -15,14 +21,18 @@ window.g_age = 25;
     // 全局变量  
     window.DateUtils = DateUtils;  
 })(window);  
+```
+
 这种方式是最常用的，比如JQuery、Underscore等框架都是采用这种结构编写的。
 
-方式2：stringUtil.js
+### 方式2：stringUtil.js
+```javascript
 // 全局变量  
 var StringUtils = {};  
 StringUtils.toUpperCase = function(input){  
     alert("toUpperCase");  
 }  
+```
 很显然stringUtil.js和dateUtil.js都不符合AMD规范，现在我们看看如何通过requireJS进行加载。工程目录结构如下：
 index.html  
 main.js  
@@ -31,8 +41,9 @@ libs
     --stringUtil.js  
 index.html和main.js的实现代码如下：
 
-index.html
+## index.html
 
+```html
 <!doctype html>  
 <html>  
     <head>  
@@ -45,18 +56,23 @@ index.html
        
     </body>  
 </html>  
+```
 
-main.js
+## main.js
 
+```javascript
 requirejs.config({  
     baseUrl: 'libs'  
 });  
 require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {   
     alert(dateUtil===undefined);//true  
 });  
+```
 通过浏览器控制台可以看到,
 很明显dateUtil.js和stringUtil.js能够被requireJS正常加载，但是不能获取到这2个模块的返回值。
 我们修改下index.html，给div注册事件处理函数，并在事件处理函数中调用stringUtil.js提供的方法:
+
+```html
 <!doctype html>  
 <html>  
     <head>  
@@ -74,10 +90,15 @@ require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {
         <div id="div1" style="width:200px;height:200px;background-color:#465ae0;" onclick="test();"></div>  
     </body>  
 </html>  
+```
+
 点击div1，可以发现test()函数不会报错。也就是说，requireJS加载不符合AMD规范的js文件，跟我们直接在html通过<script>标签加载，没有太大的差别。
 js文件中引入的全局变量，依然会存在，依然能够正常使用。
 
 下面我们看下shim参数的使用方式，我们将main.js修改如下:
+
+
+```javascript
 requirejs.config({  
     baseUrl: 'libs',  
     shim:{  
@@ -95,6 +116,7 @@ require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {
     stringUtil.toUpperCase();  
     dateUtil.toString();  
 });  
+```
 这段代码可以正常运行，可以看到：shim参数能够帮助我们以AMD模块的方式，使用那些不符合AMD规范的模块。
 下面接介绍下：deps和exports的含义。exports很好理解，就是模块的返回值。main.js中exports的值，
 一定要与dateUtil.js和stringUtil.js中暴露出的全局变量名称一致。很显然dateUtil.js和stringUtil.js这2个模块的返回值，
@@ -104,6 +126,8 @@ require(["dateUtil","stringUtil"], function(dateUtil,stringUtil) {
 
 上面我们编写的dateUtil.js和stringUtil.js，都不依赖于其他js模块，所以指定的deps是空数组。
 下面我们编写的aplugin.js和bplugin.js都依赖于模块util.js。
+
+```javascript
 //aplugin.js  
 (function(window,util) {  
     var a = {};  
@@ -124,7 +148,10 @@ var util = {};
 util.add = function(v1,v2){  
     return v1+v2;  
 };  
+```
 main.js代码如下，只有设置正确的依赖顺序，使用的时候才不会出问题。
+
+```javascript
 requirejs.config({  
     baseUrl: 'libs',  
     shim:{  
@@ -157,8 +184,12 @@ require(["stringUtil","dateUtil","aplugin","bplugin"], function(string,date) {
     bPl.toString();  
   
 });  
+```
+
 很显然util.js也不符合AMD规范，如果A模块依赖于B模块，A模块不符合AMD规范(使用的是全局变量)，那么B模块也必须是使用全局变量，否则会报错。
 即如果将util.js改成符合AMD规范的写法，那么aplugin.js和bplugin.js都会因找不到util对象而报错。
+
+```javascript
 // 符合AMD规范的util.js  
   
 define(function(){  
@@ -168,12 +199,14 @@ define(function(){
     }   
     return {"add":add}; 
 });  
-
+```
 最后我们看下shim配置参数中init的作用。init可以指定一个函数主要就是用来避免类库之间的冲突。
 由于不符合AMD规范的js文件，会使用全局变量。所以当加载多个模块的时候存在名字冲突的可能。
 比如JQuery、UnderScore等框架都会提供一个noConflict()函数来避免名字冲突，
 noConflict()的实现原理可以参考这篇文章http://blog.csdn.net/aitangyong/article/details/44200751。
 我们编写一个不符合AMD规范的模块conflict.js，使用了全局变量$E，并提供noConflict方法。
+
+```javascript
 (function(window) {  
     // 保存之前数据  
     var _$E = window.$E;  
@@ -186,7 +219,11 @@ noConflict()的实现原理可以参考这篇文章http://blog.csdn.net/aitangyo
     // 向全局对象注册$E  
     window.$E = myplugin;  
 })(window);  
+```
+
 将index.html修改如下，在requireJS加载之前，先定义一个全局变量$E。
+
+```html
 <!doctype html>  
 <html>  
     <head>  
@@ -201,7 +238,11 @@ noConflict()的实现原理可以参考这篇文章http://blog.csdn.net/aitangyo
         <div id="div1" style="width:200px;height:200px;background-color:#465ae0;" onclick="test();"></div>  
     </body>  
 </html>  
+```
+
 main.js中代码如下：
+
+```javascript
 requirejs.config({  
     baseUrl: 'libs',  
     shim:{  
@@ -218,6 +259,8 @@ require(["conflict"], function(mayConflict) {
     alert(mayConflict.name);  
     alert(window.$E);//before  
 });  
+```
+
 运行index.html，可以发现conflict.js能够与之前定义的全局变量$E共存，避免了冲突，这就是通过init实现的。
 如果没有定义init，可以看到alert(window.$E)打印的值是undefined。
 
