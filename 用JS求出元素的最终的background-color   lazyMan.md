@@ -1,5 +1,6 @@
-一、用JS求出元素的最终的background-color，不考虑元素float情况。
+## 一、用JS求出元素的最终的background-color，不考虑元素float情况。
 
+```javascript
 widow.getComputedStyle (获取css中设置的样式，'准浏览器'。返回的对象中，驼峰命名和中划线命名的都有，如：background-color和backgroundColor都有。 element.style (获取的是元素行间设置的样式) element.currentStyle (ie低版本)
 
 // 获取指定元素的某个CSS样式，兼容IE
@@ -25,10 +26,11 @@ var getBG = function($el) {
         return color;
     }
 }
+```
 
+## 二、实现LazyMan
 
-二、实现LazyMan
-
+```javascript
     function _LazyMan(_name) {
     var _this = this;
     _this.tasks = [];
@@ -80,3 +82,4 @@ _LazyMan.prototype.eat = function(_eat) {
 var LazyMan = function(_name) {
     return new _LazyMan(_name);
 }
+```
